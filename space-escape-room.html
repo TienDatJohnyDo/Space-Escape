@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission: Cosmos Rescue — Space Escape Room</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+:root{
+  --void:#020810;--deep:#060f1e;--border:#162540;--border-hi:#1e3a60;
+  --cyan:#00e5ff;--cyan-dim:rgba(0,229,255,0.18);--cyan-glow:rgba(0,229,255,0.35);
+  --gold:#ffd600;--gold-dim:rgba(255,214,0,0.15);
+  --green:#00ff88;--green-dim:rgba(0,255,136,0.15);
+  --red:#ff2d55;--red-dim:rgba(255,45,85,0.15);
+  --text:#c8dff0;--text-dim:#4a7090;--text-muted:#2a4060;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 15% 10%,#081830 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 85% 90%,#100820 0%,transparent 50%),var(--void);}
+.stars::before,.stars::after{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(1px 1px at 8% 12%,#fff,transparent),radial-gradient(1px 1px at 18% 68%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 27% 33%,#acd4ff,transparent),radial-gradient(1px 1px at 37% 85%,#fff,transparent),
+  radial-gradient(1px 1px at 47% 22%,#fff,transparent),radial-gradient(1px 1px at 55% 58%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 63% 9%,#ffeebb,transparent),radial-gradient(1px 1px at 72% 44%,#fff,transparent),
+  radial-gradient(1px 1px at 80% 76%,#fff,transparent),radial-gradient(1px 1px at 90% 31%,#acd4ff,transparent),
+  radial-gradient(1px 1px at 4% 51%,#fff,transparent),radial-gradient(1px 1px at 94% 63%,#fff,transparent),
+  radial-gradient(1px 1px at 43% 47%,#fff,transparent),radial-gradient(1px 1px at 67% 88%,#fff,transparent);
+  background-size:400px 400px;animation:twinkle 5s ease-in-out infinite alternate;}
+.stars::after{background-size:650px 650px;animation-delay:-3s;opacity:.5;}
+@keyframes twinkle{from{opacity:.7}to{opacity:1}}
+.screen{position:relative;z-index:1;display:none;flex-direction:column;align-items:center;min-height:100vh;padding:22px 14px 60px;}
+.screen.active{display:flex;}
+.masthead{text-align:center;margin-bottom:20px;}
+.masthead h1{font-family:'Orbitron',monospace;font-size:clamp(1rem,3.5vw,2rem);font-weight:900;color:var(--cyan);
+  letter-spacing:5px;text-shadow:0 0 24px var(--cyan-glow);}
+.masthead .sub{font-size:.68rem;color:var(--text-muted);letter-spacing:4px;text-transform:uppercase;margin-top:4px;}
+.hud{display:flex;align-items:center;gap:12px;width:100%;max-width:740px;margin-bottom:16px;flex-wrap:wrap;}
+.tbadge{font-family:'Share Tech Mono',monospace;font-size:.95rem;letter-spacing:3px;color:var(--gold);
+  padding:7px 14px;background:var(--gold-dim);border:1px solid rgba(255,214,0,.25);border-radius:7px;
+  text-shadow:0 0 8px rgba(255,214,0,.4);white-space:nowrap;}
+.tbadge.warn{color:var(--red);background:var(--red-dim);border-color:rgba(255,45,85,.3);animation:fl .7s infinite;}
+@keyframes fl{0%,100%{opacity:1}50%{opacity:.5}}
+.hbar{flex:1;min-width:120px;}.htrack{height:4px;background:#0c1e34;border-radius:3px;overflow:hidden;}
+.hfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--gold));transition:width .9s;}
+.hdots{display:flex;gap:6px;}
+.hd{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);background:transparent;transition:all .4s;}
+.hd.done{background:var(--green);border-color:var(--green);box-shadow:0 0 7px var(--green);}
+.hd.now{border-color:var(--cyan);animation:hdp 1.4s infinite;}
+@keyframes hdp{0%,100%{transform:scale(1)}50%{transform:scale(1.35);box-shadow:0 0 9px var(--cyan-glow);}}
+.panel{width:100%;max-width:740px;background:rgba(6,15,30,.97);border:1px solid var(--border);border-radius:16px;
+  padding:24px 20px;box-shadow:0 0 50px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);margin-bottom:16px;}
+.ptag{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:4px;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ptag::before,.ptag::after{content:'';flex:0 0 14px;height:1px;background:var(--border);}
+.ptitle{font-family:'Orbitron',monospace;font-size:1.05rem;color:var(--cyan);letter-spacing:2px;margin-bottom:6px;}
+.lore{font-size:.86rem;color:#6a9cc0;line-height:1.8;border-left:3px solid rgba(0,229,255,.3);padding-left:13px;margin-bottom:18px;}
+.lore strong{color:var(--cyan);}
+.btn{font-family:'Orbitron',monospace;font-weight:700;font-size:.73rem;letter-spacing:2px;text-transform:uppercase;
+  padding:11px 20px;border:none;border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-c{background:linear-gradient(135deg,#0090b0,#0060dd);color:#fff;box-shadow:0 0 16px rgba(0,150,200,.35);}
+.btn-c:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 26px rgba(0,229,255,.5);}
+.btn-g{background:linear-gradient(135deg,#00b060,#00cc88);color:#000;box-shadow:0 0 16px rgba(0,255,136,.3);}
+.btn-g:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 26px rgba(0,255,136,.5);}
+.btn-gh{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-size:.68rem;padding:6px 13px;}
+.btn-gh:hover{border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.brow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;}
+.msg{padding:10px 14px;border-radius:7px;font-size:.84rem;line-height:1.5;margin-top:12px;display:none;}
+.msg.show{display:block;}
+.msg-e{background:var(--red-dim);border:1px solid rgba(255,45,85,.35);color:#ff8090;}
+.msg-ok{background:var(--green-dim);border:1px solid rgba(0,255,136,.3);color:var(--green);}
+.hint-b{margin-top:10px;padding:11px 14px;background:rgba(255,214,0,.06);border:1px solid rgba(255,214,0,.2);
+  border-radius:7px;font-size:.82rem;color:#c0a040;line-height:1.6;display:none;}
+.hint-b.show{display:block;}
+
+/* INTRO */
+#intro{justify-content:center;}
+.rocket{font-size:4.5rem;display:block;margin:16px auto;animation:hov 3s ease-in-out infinite;filter:drop-shadow(0 0 16px rgba(0,229,255,.4));}
+@keyframes hov{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+.ititle{font-family:'Orbitron',monospace;font-size:clamp(1.7rem,5.5vw,3rem);font-weight:900;color:var(--gold);
+  text-shadow:0 0 28px rgba(255,214,0,.45);margin-bottom:12px;}
+.itext{font-size:.92rem;color:#7aa0c0;line-height:1.85;margin-bottom:8px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:18px 0;}
+.chip{padding:6px 13px;border-radius:18px;border:1px solid var(--border-hi);font-size:.74rem;color:#5a8aaa;letter-spacing:1px;background:rgba(10,22,40,.7);}
+.chip em{color:var(--cyan);font-style:normal;margin-right:4px;}
+
+/* ROOM 1 */
+.pbank{display:flex;flex-wrap:wrap;gap:7px;padding:12px;border:2px dashed var(--border);border-radius:10px;min-height:54px;background:rgba(0,0,0,.2);margin:8px 0;}
+.ppill{padding:8px 12px;border-radius:7px;font-size:.79rem;font-weight:600;cursor:grab;user-select:none;border:2px solid transparent;transition:all .18s;white-space:nowrap;}
+.ppill:hover{transform:scale(1.07);}
+.ppill.dragging{opacity:.4;transform:scale(1.1);}
+.pslots{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+.pslot{width:74px;height:56px;border:2px dashed #1e3a5a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .18s;position:relative;flex-shrink:0;}
+.pslot .sn{font-family:'Orbitron',monospace;font-size:.57rem;color:#2a4a6a;position:absolute;top:3px;left:5px;}
+.pslot .sf{font-size:.66rem;font-weight:700;text-align:center;line-height:1.2;padding:2px;}
+.pslot.dov{border-color:var(--cyan);background:rgba(0,229,255,.07);}
+.olbl{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:2px;margin:4px 0 2px;}
+.pp-mercury{background:rgba(130,105,75,.3);border-color:#826b4b!important;color:#c09a6a;}
+.pp-venus{background:rgba(180,120,40,.3);border-color:#b07828!important;color:#e0a058;}
+.pp-earth{background:rgba(20,90,200,.3);border-color:#145ac8!important;color:#60aaff;}
+.pp-mars{background:rgba(180,45,25,.3);border-color:#b42d19!important;color:#ff6855;}
+.pp-jupiter{background:rgba(175,110,50,.3);border-color:#af6e32!important;color:#e09050;}
+.pp-saturn{background:rgba(200,155,70,.3);border-color:#c89b46!important;color:#eecf70;}
+.pp-uranus{background:rgba(50,170,190,.3);border-color:#32aabe!important;color:#60d8e8;}
+.pp-neptune{background:rgba(25,45,200,.3);border-color:#192dc8!important;color:#6070ff;}
+
+/* ROOM 2 */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
+@media(max-width:520px){.mgrid{grid-template-columns:1fr;}}
+.ccard{background:rgba(10,22,40,.85);border:2px solid var(--border);border-radius:10px;padding:12px 13px;transition:border-color .2s;}
+.cnum{font-family:'Orbitron',monospace;font-size:.57rem;color:var(--text-muted);margin-bottom:5px;letter-spacing:2px;}
+.ctxt{font-size:.82rem;color:var(--text);line-height:1.55;}
+.csel{margin-top:9px;width:100%;background:#060f1e;border:1px solid var(--border-hi);color:var(--cyan);
+  padding:6px 9px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:.81rem;cursor:pointer;outline:none;-webkit-appearance:none;}
+.csel:focus{border-color:var(--cyan);}
+.ccard.correct{border-color:var(--green);background:rgba(0,255,136,.06);}
+.ccard.wrong{border-color:var(--red);background:rgba(255,45,85,.06);animation:shk .35s;}
+@keyframes shk{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+.cverd{font-size:.71rem;margin-top:5px;font-weight:700;display:none;}
+.ccard.correct .cverd{display:block;color:var(--green);}
+.ccard.wrong .cverd{display:block;color:var(--red);}
+
+/* ROOM 3 */
+.bintx{background:#010a14;border:1px solid rgba(0,229,255,.2);border-radius:9px;padding:15px;margin:12px 0;position:relative;overflow:hidden;}
+.bintx::before{content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,229,255,.04),transparent);animation:scan 3s linear infinite;}
+@keyframes scan{to{left:160%}}
+.blbl{font-size:.6rem;color:var(--text-muted);letter-spacing:3px;margin-bottom:9px;font-family:'Orbitron',monospace;}
+.bchunks{display:flex;flex-wrap:wrap;gap:8px;}
+.bchunk{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bcode{font-family:'Share Tech Mono',monospace;font-size:clamp(.64rem,1.7vw,.8rem);color:var(--cyan);
+  background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.15);padding:6px 8px;border-radius:5px;letter-spacing:2px;white-space:nowrap;}
+.bblank{width:28px;height:32px;border-bottom:2px solid var(--text-dim);display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:var(--gold);transition:all .2s;}
+.bblank.filled{border-color:var(--cyan);color:var(--cyan);}
+.reftog{display:inline-flex;align-items:center;gap:7px;font-family:'Orbitron',monospace;font-size:.67rem;color:var(--gold);
+  cursor:pointer;padding:7px 13px;border:1px solid rgba(255,214,0,.25);border-radius:7px;background:var(--gold-dim);letter-spacing:1px;transition:all .2s;margin:7px 0;}
+.reftog:hover{box-shadow:0 0 12px rgba(255,214,0,.3);}
+.refpanel{background:#010a14;border:1px solid rgba(0,229,255,.15);border-radius:9px;padding:14px;margin:7px 0;display:none;}
+.refpanel.show{display:block;}
+.reftitle{font-family:'Orbitron',monospace;font-size:.58rem;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;}
+.reftbl{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:4px;}
+.refrow{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:4px;background:rgba(0,229,255,.04);
+  font-family:'Share Tech Mono',monospace;font-size:.7rem;cursor:pointer;transition:background .15s;user-select:none;}
+.refrow:hover{background:rgba(0,229,255,.12);}
+.rl{color:var(--gold);font-weight:700;width:14px;}
+.rb{color:var(--cyan);letter-spacing:1px;font-size:.67rem;}
+.ainput{flex:1;min-width:170px;background:#010a14;border:2px solid var(--border-hi);color:var(--gold);
+  padding:10px 13px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.9rem;letter-spacing:4px;
+  text-transform:uppercase;outline:none;transition:all .2s;}
+.ainput:focus{border-color:var(--cyan);box-shadow:0 0 10px var(--cyan-dim);}
+.ainput::placeholder{color:var(--text-muted);font-size:.62rem;letter-spacing:2px;}
+.livdec{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0;min-height:34px;}
+.dch{width:28px;height:32px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;
+  font-size:.9rem;font-weight:700;border-bottom:2px solid var(--border-hi);color:var(--text-muted);transition:all .2s;}
+.dch.match{color:var(--cyan);border-color:var(--cyan);}
+.dch.found{color:var(--gold);border-color:var(--gold);animation:pop .3s;}
+@keyframes pop{0%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+/* ROOM 4 */
+.mq{font-size:.97rem;font-weight:600;color:var(--text);margin-bottom:15px;line-height:1.65;}
+.mopts{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;}
+@media(max-width:420px){.mopts{grid-template-columns:1fr;}}
+.mopt{padding:13px 9px;border-radius:10px;border:2px solid var(--border);background:rgba(10,22,40,.7);cursor:pointer;
+  font-size:.86rem;color:#7a9abb;transition:all .2s;text-align:center;}
+.mopt .mi{font-size:1.8rem;display:block;margin-bottom:5px;}
+.mopt .mn{font-size:.7rem;color:var(--text-muted);}
+.mopt:hover:not(.locked){border-color:#2a5a8a;background:rgba(0,80,160,.2);color:var(--text);}
+.mopt.correct{border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green);}
+.mopt.wrong{border-color:var(--red);background:rgba(255,45,85,.1);color:var(--red);animation:shk .35s;}
+.mopt.reveal{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green);}
+.mopt.locked{pointer-events:none;}
+.mprog{font-family:'Orbitron',monospace;font-size:.69rem;color:var(--text-muted);margin-bottom:9px;}
+.mscr{font-family:'Orbitron',monospace;font-size:.69rem;color:var(--gold);text-align:right;margin-bottom:8px;}
+/* text-style moon opts */
+.mopt-txt{padding:11px 15px;border-radius:9px;border:2px solid var(--border);background:rgba(10,22,40,.7);cursor:pointer;
+  font-size:.84rem;color:#7a9abb;text-align:left;transition:all .2s;}
+.mopt-txt:hover:not(.locked){border-color:#2a5a8a;background:rgba(0,80,160,.2);color:var(--text);}
+.mopt-txt.correct{border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green);}
+.mopt-txt.wrong{border-color:var(--red);background:rgba(255,45,85,.1);color:var(--red);animation:shk .35s;}
+.mopt-txt.reveal{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green);}
+.mopt-txt.locked{pointer-events:none;}
+
+/* ROOM 5 */
+.qqt{font-size:.96rem;font-weight:600;color:var(--text);margin-bottom:13px;line-height:1.65;}
+.qopts{display:flex;flex-direction:column;gap:8px;}
+.qopt{padding:11px 14px;border-radius:9px;border:2px solid var(--border);background:rgba(10,22,40,.7);cursor:pointer;
+  font-size:.85rem;color:#7a9abb;text-align:left;transition:all .2s;}
+.qopt:hover:not(.locked){border-color:#2a5a8a;background:rgba(0,80,160,.2);color:var(--text);}
+.qopt.correct{border-color:var(--green);background:rgba(0,255,136,.1);color:var(--green);}
+.qopt.wrong{border-color:var(--red);background:rgba(255,45,85,.1);color:var(--red);}
+.qopt.reveal{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green);}
+.qopt.locked{pointer-events:none;}
+.qprog{font-family:'Orbitron',monospace;font-size:.69rem;color:var(--text-muted);margin-bottom:7px;}
+.qscr{font-family:'Orbitron',monospace;font-size:.69rem;color:var(--gold);text-align:right;margin-bottom:8px;}
+
+/* PASSCODE */
+.pcrow{display:flex;gap:9px;justify-content:center;margin:18px 0;}
+.pdig{width:50px;height:62px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;border:2px solid var(--border);
+  color:var(--text-muted);background:rgba(0,0,0,.4);transition:all .4s;}
+.pdig.lit{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.07);box-shadow:0 0 13px var(--cyan-dim);}
+
+/* WIN */
+#win{justify-content:center;}
+.cnv{position:fixed;inset:0;pointer-events:none;z-index:99;}
+.trophy{font-size:4.8rem;display:block;margin:14px auto;animation:land .8s cubic-bezier(.3,1.4,.6,1) forwards;}
+@keyframes land{0%{transform:scale(0) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.wtitle{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,5vw,2.6rem);font-weight:900;color:var(--green);
+  text-shadow:0 0 28px rgba(0,255,136,.45);margin-bottom:10px;}
+.wsub{font-size:.9rem;color:#7aa0c0;margin-bottom:5px;line-height:1.7;}
+.wstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;}
+.wstat{background:rgba(10,22,40,.9);border:1px solid var(--border);border-radius:9px;padding:14px 7px;text-align:center;}
+.wsv{font-family:'Orbitron',monospace;font-size:1.4rem;color:var(--gold);}
+.wsl{font-size:.69rem;color:var(--text-muted);margin-top:3px;}
+
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(ellipse 80% 60% at 15% 10%,#081830 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 85% 90%,#100820 0%,transparent 50%),var(--void);}
+#login .lstars{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(1px 1px at 8% 12%,#fff,transparent),radial-gradient(1px 1px at 22% 55%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 35% 20%,#acd4ff,transparent),radial-gradient(1px 1px at 50% 80%,#fff,transparent),
+  radial-gradient(1px 1px at 65% 35%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 70%,#ffeebb,transparent),
+  radial-gradient(1px 1px at 90% 15%,#fff,transparent),radial-gradient(1px 1px at 12% 88%,#fff,transparent),
+  radial-gradient(1px 1px at 42% 60%,#acd4ff,transparent),radial-gradient(1px 1px at 88% 45%,#fff,transparent),
+  radial-gradient(1px 1px at 55% 10%,#fff,transparent),radial-gradient(1px 1px at 30% 75%,#fff,transparent);
+  background-size:500px 500px;animation:twinkle 5s ease-in-out infinite alternate;}
+.login-box{position:relative;z-index:1;width:100%;max-width:440px;
+  background:rgba(4,10,22,.97);border:1px solid var(--border-hi);border-radius:20px;padding:38px 32px;
+  box-shadow:0 0 60px rgba(0,0,0,.8),0 0 40px rgba(0,229,255,.06),inset 0 1px 0 rgba(255,255,255,.05);}
+.login-icon{font-size:3.2rem;display:block;text-align:center;margin-bottom:10px;
+  animation:hov 3s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(0,229,255,.4));}
+.login-title{font-family:'Orbitron',monospace;font-size:clamp(1.1rem,4vw,1.7rem);font-weight:900;color:var(--cyan);
+  text-align:center;letter-spacing:4px;text-shadow:0 0 20px var(--cyan-glow);margin-bottom:4px;}
+.login-sub{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:4px;
+  text-align:center;text-transform:uppercase;margin-bottom:28px;}
+.login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-hi),transparent);margin-bottom:24px;}
+.field-group{margin-bottom:18px;}
+.field-label{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--text-dim);letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+.field-label::before{content:'';width:12px;height:1px;background:var(--border-hi);}
+.login-input{width:100%;background:#020d1a;border:1.5px solid var(--border-hi);color:var(--text);
+  padding:12px 16px;border-radius:9px;font-family:'Exo 2',sans-serif;font-size:.95rem;outline:none;
+  transition:all .25s;letter-spacing:1px;}
+.login-input:focus{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-dim);background:#030f20;}
+.login-input::placeholder{color:var(--text-muted);font-size:.82rem;letter-spacing:1px;}
+.pw-wrap{position:relative;}
+.pw-wrap .login-input{padding-right:46px;}
+.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:4px;transition:color .2s;}
+.pw-eye:hover{color:var(--cyan);}
+.login-btn{width:100%;margin-top:8px;font-family:'Orbitron',monospace;font-weight:700;font-size:.8rem;
+  letter-spacing:3px;text-transform:uppercase;padding:14px;border:none;border-radius:9px;cursor:pointer;
+  background:linear-gradient(135deg,#0090b0,#0060dd);color:#fff;
+  box-shadow:0 0 20px rgba(0,150,200,.4);transition:all .2s;}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(0,229,255,.55);}
+.login-btn:active{transform:translateY(0);}
+.login-err{margin-top:14px;padding:10px 14px;border-radius:7px;font-size:.82rem;text-align:center;
+  background:var(--red-dim);border:1px solid rgba(255,45,85,.35);color:#ff8090;display:none;}
+.login-err.show{display:block;animation:shk .35s;}
+.login-users{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);}
+.user-list-title{font-family:'Orbitron',monospace;font-size:.58rem;color:var(--text-muted);letter-spacing:3px;
+  text-align:center;margin-bottom:12px;}
+.user-slots{display:flex;flex-direction:column;gap:8px;}
+.user-slot{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;
+  background:rgba(0,229,255,.03);border:1px solid var(--border);}
+.user-slot-num{font-family:'Orbitron',monospace;font-size:.58rem;color:var(--text-muted);width:18px;}
+.user-slot-name{font-size:.82rem;color:var(--text-dim);flex:1;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+.user-slot-name.set{color:var(--cyan);}
+.user-slot-status{font-size:.7rem;color:var(--text-muted);}
+.user-slot-status.active{color:var(--green);}
+.add-user-row{display:flex;gap:8px;margin-top:10px;}
+.add-input{flex:1;background:#020d1a;border:1.5px solid var(--border);color:var(--text);
+  padding:8px 12px;border-radius:7px;font-family:'Exo 2',sans-serif;font-size:.82rem;outline:none;transition:all .2s;}
+.add-input:focus{border-color:var(--cyan);}
+.add-input::placeholder{color:var(--text-muted);font-size:.75rem;}
+.add-btn{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);
+  padding:8px 14px;border-radius:7px;font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.add-btn:hover{background:rgba(0,229,255,.2);}
+.logged-as{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--text-dim);
+  text-align:center;margin-top:14px;letter-spacing:1px;}
+.logged-as span{color:var(--cyan);}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<canvas class="cnv" id="cv"></canvas>
+
+<!-- ══ LOGIN ══ -->
+<div id="login">
+  <div class="lstars"></div>
+  <div class="login-box">
+    <span class="login-icon">🛰️</span>
+    <div class="login-title">STATION AURORA</div>
+    <div class="login-sub">Security Clearance Required</div>
+    <div class="login-divider"></div>
+
+    <div class="field-group">
+      <div class="field-label">Commander ID</div>
+      <input class="login-input" id="li-user" type="text" placeholder="Enter your username" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Access Code</div>
+      <div class="pw-wrap">
+        <input class="login-input" id="li-pass" type="password" placeholder="Enter your password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="pw-eye" onclick="togglePw()" id="pw-eye-btn" title="Show/hide password">👁</button>
+      </div>
+    </div>
+
+    <button class="login-btn" onclick="doLogin()">⚡ REQUEST ACCESS</button>
+    <div class="login-err" id="login-err">⚠ Invalid credentials. Check your Commander ID and Access Code.</div>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div class="screen" id="intro">
+  <div class="panel" style="margin-top:36px;text-align:center;max-width:620px;">
+    <span class="rocket">🚀</span>
+    <div class="ititle">MISSION:<br>COSMOS RESCUE</div>
+    <p class="itext">Commander! Deep Space Station <strong style="color:var(--cyan)">AURORA</strong> is in emergency lockdown. A solar storm has scrambled all five security systems.</p>
+    <p class="itext">Use your Grade 6 Space Science knowledge to crack each puzzle, collect the codes, and launch the rescue rocket — <strong style="color:var(--gold)">before 30 minutes run out!</strong></p>
+    <div class="chips">
+      <div class="chip"><em>🪐</em>Room 1: Planet Order</div>
+      <div class="chip"><em>🔭</em>Room 2: Planet Match</div>
+      <div class="chip"><em>📡</em>Room 3: Binary Decoder</div>
+      <div class="chip"><em>🌙</em>Room 4: Moon Phases</div>
+      <div class="chip"><em>🛸</em>Room 5: Final Transmission</div>
+    </div>
+    <button class="btn btn-c" onclick="startGame()" style="margin-top:6px">▶ INITIATE MISSION</button>
+  </div>
+</div>
+
+<!-- ══ ROOM 1: PLANET ORDER ══ -->
+<div class="screen" id="r1">
+  <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
+  <div class="hud">
+    <div class="tbadge" id="tm1">⏱ 30:00</div>
+    <div class="hbar"><div class="htrack"><div class="hfill" style="width:0%"></div></div></div>
+    <div class="hdots"><div class="hd now"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptag">Room 1 of 5 · Solar System Lock</div>
+    <div class="ptitle">🪐 Planetary Sequence</div>
+    <div class="lore">The navigation computer needs the planets in order from the Sun. <strong>Drag each planet</strong> from the bank into the numbered slots. Slot 1 = closest to the Sun, Slot 8 = farthest.</div>
+    <div class="olbl">PLANET BANK</div>
+    <div class="pbank" id="r1bank">
+      <div class="ppill pp-jupiter" draggable="true" id="pp-jupiter" ondragstart="pd(event)" ondragend="pe(event)">☁️ Jupiter</div>
+      <div class="ppill pp-earth"   draggable="true" id="pp-earth"   ondragstart="pd(event)" ondragend="pe(event)">🌍 Earth</div>
+      <div class="ppill pp-neptune" draggable="true" id="pp-neptune" ondragstart="pd(event)" ondragend="pe(event)">💙 Neptune</div>
+      <div class="ppill pp-mercury" draggable="true" id="pp-mercury" ondragstart="pd(event)" ondragend="pe(event)">⚫ Mercury</div>
+      <div class="ppill pp-saturn"  draggable="true" id="pp-saturn"  ondragstart="pd(event)" ondragend="pe(event)">💍 Saturn</div>
+      <div class="ppill pp-venus"   draggable="true" id="pp-venus"   ondragstart="pd(event)" ondragend="pe(event)">🟡 Venus</div>
+      <div class="ppill pp-uranus"  draggable="true" id="pp-uranus"  ondragstart="pd(event)" ondragend="pe(event)">🔵 Uranus</div>
+      <div class="ppill pp-mars"    draggable="true" id="pp-mars"    ondragstart="pd(event)" ondragend="pe(event)">🔴 Mars</div>
+    </div>
+    <div class="olbl" style="margin-top:12px;">← CLOSEST TO SUN ——————————————— FARTHEST →</div>
+    <div class="pslots" id="r1slots">
+      <div class="pslot" id="sl1" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">1</span><span class="sf"></span></div>
+      <div class="pslot" id="sl2" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">2</span><span class="sf"></span></div>
+      <div class="pslot" id="sl3" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">3</span><span class="sf"></span></div>
+      <div class="pslot" id="sl4" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">4</span><span class="sf"></span></div>
+      <div class="pslot" id="sl5" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">5</span><span class="sf"></span></div>
+      <div class="pslot" id="sl6" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">6</span><span class="sf"></span></div>
+      <div class="pslot" id="sl7" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">7</span><span class="sf"></span></div>
+      <div class="pslot" id="sl8" ondragover="pov(event)" ondrop="pdr(event)"><span class="sn">8</span><span class="sf"></span></div>
+    </div>
+    <div class="brow">
+      <button class="btn btn-c" onclick="chkR1()">🔓 CHECK SEQUENCE</button>
+      <button class="btn btn-gh" onclick="th('h1')">💡 HINT</button>
+      <button class="btn btn-gh" onclick="rstR1()">↺ RESET</button>
+    </div>
+    <div class="hint-b" id="h1">💡 <strong>Mnemonic:</strong> <em>My Very Educated Mother Just Served Us Nachos</em> → Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune</div>
+    <div class="msg msg-e"  id="r1e"></div>
+    <div class="msg msg-ok" id="r1ok">✅ Sequence confirmed! First code digit unlocked: <strong>6</strong></div>
+  </div>
+</div>
+
+<!-- ══ ROOM 2: PLANET MATCH ══ -->
+<div class="screen" id="r2">
+  <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
+  <div class="hud">
+    <div class="tbadge" id="tm2">⏱ 30:00</div>
+    <div class="hbar"><div class="htrack"><div class="hfill" style="width:20%"></div></div></div>
+    <div class="hdots"><div class="hd done"></div><div class="hd now"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptag">Room 2 of 5 · Planetary Database</div>
+    <div class="ptitle">🔭 Planet Identification</div>
+    <div class="lore">The planet labels have been wiped from the database! <strong>Read each clue and select the matching planet</strong> from the dropdown. All 8 must be correct to unlock the door.</div>
+    <div class="mgrid" id="mgrid"></div>
+    <div class="brow">
+      <button class="btn btn-c" onclick="chkR2()">🔓 CHECK MATCHES</button>
+      <button class="btn btn-gh" onclick="th('h2')">💡 HINT</button>
+      <button class="btn btn-gh" onclick="rstR2()">↺ RESET</button>
+    </div>
+    <div class="hint-b" id="h2">💡 Think about each planet's unique feature: size, rings, colour, temperature, axis tilt, storms, liquid water, or orbit length. You already put them in order — use that knowledge!</div>
+    <div class="msg msg-e"  id="r2e"></div>
+    <div class="msg msg-ok" id="r2ok">✅ Database restored! Second code digit unlocked: <strong>3</strong></div>
+  </div>
+</div>
+
+<!-- ══ ROOM 3: BINARY DECODER ══ -->
+<div class="screen" id="r3">
+  <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
+  <div class="hud">
+    <div class="tbadge" id="tm3">⏱ 30:00</div>
+    <div class="hbar"><div class="htrack"><div class="hfill" style="width:40%"></div></div></div>
+    <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div><div class="hd"></div><div class="hd"></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptag">Room 3 of 5 · Encrypted Signal</div>
+    <div class="ptitle">📡 Binary Transmission Decoder</div>
+    <div class="lore">A distress signal arrived in <strong>binary code</strong>! Each group of 8 ones and zeros represents one letter of the alphabet. Open the reference table, decode each group, and type the hidden space science word!</div>
+    <div class="bintx">
+      <div class="blbl">INCOMING TRANSMISSION ///</div>
+      <div class="bchunks" id="bchunks"></div>
+    </div>
+    <div>
+      <div class="reftog" onclick="togRef()">📖 BINARY ALPHABET TABLE <span id="rarr">▼</span></div>
+      <div class="refpanel" id="refpanel">
+        <div class="reftitle">REFERENCE TABLE — CLICK ANY ROW TO ADD THAT LETTER TO YOUR ANSWER BOX</div>
+        <div class="reftbl" id="reftbl"></div>
+      </div>
+    </div>
+    <div style="margin:10px 0 3px;font-family:'Orbitron',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:3px;">YOUR DECODED LETTERS:</div>
+    <div class="livdec" id="livdec"></div>
+    <div class="brow" style="margin-top:10px">
+      <input class="ainput" id="bans" type="text" maxlength="9" placeholder="TYPE THE DECODED WORD" oninput="livChk()" autocomplete="off" spellcheck="false">
+      <button class="btn btn-c" onclick="chkR3()">🔓 DECODE</button>
+    </div>
+    <div class="brow" style="margin-top:6px">
+      <button class="btn btn-gh" onclick="th('h3')">💡 HINT</button>
+      <button class="btn btn-gh" onclick="document.getElementById('bans').value='';livChk()">✕ CLEAR</button>
+    </div>
+    <div class="hint-b" id="h3">💡 Count the binary groups — that's how many letters. Match each 8-digit group in the table to get its letter. The word is something that orbits a larger object in space (it's in your notes!).</div>
+    <div class="msg msg-e"  id="r3e"></div>
+    <div class="msg msg-ok" id="r3ok">✅ Signal decoded! Third code digit unlocked: <strong>9</strong></div>
+  </div>
+</div>
+
+<!-- ══ ROOM 4: MOON PHASES ══ -->
+<div class="screen" id="r4">
+  <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
+  <div class="hud">
+    <div class="tbadge" id="tm4">⏱ 30:00</div>
+    <div class="hbar"><div class="htrack"><div class="hfill" style="width:60%"></div></div></div>
+    <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div><div class="hd"></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptag">Room 4 of 5 · Lunar Observatory</div>
+    <div class="ptitle">🌙 Moon Phase Identification</div>
+    <div class="lore">The observatory charts are corrupted. <strong>Answer 5 questions</strong> — you need at least 4 correct to unlock this door!</div>
+    <div id="mcon"></div>
+    <div class="brow">
+      <button class="btn btn-c" id="mnxt" onclick="nxtM()" style="display:none">→ NEXT QUESTION</button>
+      <button class="btn btn-g" id="mfin" onclick="finM()" style="display:none">🔓 UNLOCK DOOR</button>
+    </div>
+    <div class="msg msg-ok" id="r4ok">✅ Observatory calibrated! Fourth code digit unlocked: <strong>2</strong></div>
+    <div class="msg msg-e"  id="r4e"></div>
+  </div>
+</div>
+
+<!-- ══ ROOM 5: FINAL QUIZ ══ -->
+<div class="screen" id="r5">
+  <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
+  <div class="hud">
+    <div class="tbadge" id="tm5">⏱ 30:00</div>
+    <div class="hbar"><div class="htrack"><div class="hfill" style="width:80%"></div></div></div>
+    <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div></div>
+  </div>
+  <div class="panel">
+    <div class="ptag">Room 5 of 5 · Final Transmission</div>
+    <div class="ptitle">🛸 Mission Control Quiz</div>
+    <div class="lore">Final challenge! Answer <strong>8 questions</strong> from your learning notes — you need at least 6 correct to broadcast the launch code!</div>
+    <div class="qprog" id="qprog">Question 1 / 8</div>
+    <div class="qscr"  id="qscr">Score: 0 / 8</div>
+    <div class="qqt"   id="qqt"></div>
+    <div class="qopts" id="qopts"></div>
+    <div class="msg msg-ok" id="r5ok" style="margin-top:13px">✅ All codes collected! Final digit unlocked: <strong>4</strong></div>
+    <div class="msg msg-e"  id="r5e"  style="margin-top:13px"></div>
+  </div>
+  <div class="panel" id="pcpanel" style="display:none">
+    <div class="ptitle">🔐 LAUNCH PASSCODE</div>
+    <div class="lore">All 5 security codes have been collected. The passcode is assembled — <strong>launch the rescue rocket!</strong></div>
+    <div class="pcrow">
+      <div class="pdig lit">6</div>
+      <div class="pdig lit">3</div>
+      <div class="pdig lit">9</div>
+      <div class="pdig lit">2</div>
+      <div class="pdig lit" id="pdig5">_</div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-g" id="lbtn" disabled onclick="doLaunch()">🚀 LAUNCH RESCUE ROCKET</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WIN ══ -->
+<div class="screen" id="win">
+  <div class="panel" style="text-align:center;max-width:600px;margin-top:38px">
+    <span class="trophy">🏆</span>
+    <div class="wtitle">MISSION COMPLETE!</div>
+    <p class="wsub">The rescue rocket has launched! Station AURORA is saved!</p>
+    <p class="wsub" style="font-size:.8rem;color:#5a8090;">Outstanding work, Commander. You've proven your Grade 6 Space Science mastery!</p>
+    <div class="wstats">
+      <div class="wstat"><div class="wsv" id="wt">—</div><div class="wsl">TIME LEFT</div></div>
+      <div class="wstat"><div class="wsv">5/5</div><div class="wsl">ROOMS CLEARED</div></div>
+      <div class="wstat"><div class="wsv">⭐⭐⭐</div><div class="wsl">RATING</div></div>
+    </div>
+    <button class="btn btn-c" onclick="restart()">↺ PLAY AGAIN</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// TIMER
+// ─────────────────────────────────────────────
+let tInt=null,sLeft=1800;
+const TOTAL=1800;
+function startTimer(){
+  tInt=setInterval(()=>{
+    sLeft--;
+    const m=String(Math.floor(sLeft/60)).padStart(2,'0'),s=String(sLeft%60).padStart(2,'0'),txt=`⏱ ${m}:${s}`;
+    for(let i=1;i<=5;i++){const el=document.getElementById(`tm${i}`);if(el){el.textContent=txt;el.classList.toggle('warn',sLeft<120);}}
+    if(sLeft<=0){clearInterval(tInt);alert("⏰ Time's up! The station is lost… try again!");restart();}
+  },1000);
+}
+function stopTimer(){clearInterval(tInt);}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function show(id){document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function startGame(){sLeft=TOTAL;show('r1');startTimer();}
+function restart(){
+  stopTimer();sLeft=TOTAL;
+  rstR1();rstR2();
+  ['r1e','r1ok','r2e','r2ok','r3e','r3ok','r4ok','r4e','r5ok','r5e'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('show');});
+  document.getElementById('bans').value='';livChk();
+  moonI=0;moonSc=0;initMoon();
+  qI=0;qSc=0;initQuiz();
+  document.getElementById('pcpanel').style.display='none';
+  document.getElementById('pdig5').textContent='_';
+  document.getElementById('lbtn').disabled=true;
+  show('intro');
+}
+function th(id){document.getElementById(id).classList.toggle('show');}
+function showM(id,txt){const el=document.getElementById(id);if(el){el.innerHTML=txt;el.classList.add('show');}}
+
+// ─────────────────────────────────────────────
+// ROOM 1 — PLANET ORDER
+// ─────────────────────────────────────────────
+const PANS=['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune'];
+let dragP=null;const smap={};
+function pd(e){dragP=e.target;e.target.classList.add('dragging');e.dataTransfer.setData('text',e.target.id);}
+function pe(e){e.target.classList.remove('dragging');}
+function pov(e){e.preventDefault();e.currentTarget.classList.add('dov');}
+document.addEventListener('dragleave',e=>{if(e.target.classList&&e.target.classList.contains('pslot'))e.target.classList.remove('dov');});
+function pdr(e){
+  e.preventDefault();const sl=e.currentTarget;sl.classList.remove('dov');
+  const pid=e.dataTransfer.getData('text'),sn=sl.id.replace('sl','');
+  const prev=sl.getAttribute('data-pid');
+  if(prev){rtb(prev);delete smap[sn];}
+  for(const[k,v]of Object.entries(smap)){if(v===pid){clrSl(k);delete smap[k];break;}}
+  const pEl=document.getElementById(pid);
+  const cls=[...pEl.classList].find(c=>c.startsWith('pp-'));
+  sl.querySelector('.sf').innerHTML=`<div class="ppill ${cls}" style="font-size:.63rem;padding:4px 6px;cursor:default;pointer-events:none;">${pEl.textContent}</div>`;
+  sl.setAttribute('data-pid',pid);smap[sn]=pid;pEl.style.display='none';
+}
+function clrSl(n){const s=document.getElementById('sl'+n);s.querySelector('.sf').innerHTML='';s.removeAttribute('data-pid');}
+function rtb(pid){const el=document.getElementById(pid);if(el){el.style.display='';document.getElementById('r1bank').appendChild(el);}}
+function rstR1(){for(let i=1;i<=8;i++)clrSl(i);Object.keys(smap).forEach(k=>delete smap[k]);document.querySelectorAll('.ppill').forEach(el=>{el.style.display='';document.getElementById('r1bank').appendChild(el);});}
+function chkR1(){
+  for(let i=1;i<=8;i++)if(!smap[i]){showM('r1e','⚠ Fill all 8 slots first!');return;}
+  const ord=Object.keys(smap).sort((a,b)=>+a-+b).map(k=>smap[k].replace('pp-',''));
+  if(JSON.stringify(ord)===JSON.stringify(PANS)){
+    document.getElementById('r1e').classList.remove('show');
+    document.getElementById('r1ok').classList.add('show');
+    setTimeout(()=>show('r2'),2000);
+  } else showM('r1e','⚠ Incorrect order. Try the hint: My Very Educated Mother Just Served Us Nachos!');
+}
+
+// ─────────────────────────────────────────────
+// ROOM 2 — PLANET MATCH (Alberta curriculum clues)
+// ─────────────────────────────────────────────
+const CLUES=[
+  {clue:"I am the largest planet — over 1,300 Earths could fit inside me! I have a famous storm called the Great Red Spot that has raged for hundreds of years.",ans:"Jupiter"},
+  {clue:"I am the farthest planet from the Sun and take 165 Earth years to orbit it. I have the strongest winds in the solar system and, like my neighbour, I am classified as an ice giant.",ans:"Neptune"},
+  {clue:"I am the only known planet to support life. I have liquid water on my surface and a protective ozone layer that shields living things from harmful UV radiation.",ans:"Earth"},
+  {clue:"I have a spectacular ring system made of ice and rock chunks. I am so light compared to my size that I would actually float on water if you found an ocean big enough!",ans:"Saturn"},
+  {clue:"I am called the Red Planet because my surface is coated in iron-rich, rust-coloured dust. Scientists have sent rovers and probes to explore me and look for signs of ancient life.",ans:"Mars"},
+  {clue:"I spin on my side — my axis is tilted nearly 98° — so I basically roll around the Sun like a bowling ball. I am an ice giant with a pale blue-green colour caused by methane.",ans:"Uranus"},
+  {clue:"I am the hottest planet even though I'm not the closest to the Sun. My thick carbon dioxide atmosphere traps heat like a blanket, making my surface hotter than 460°C.",ans:"Venus"},
+  {clue:"I am the smallest planet and the closest to the Sun. A year on me lasts only 88 Earth days and I have almost no atmosphere, so temperatures swing wildly between extreme heat and cold.",ans:"Mercury"},
+];
+const POPTS=["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"];
+function buildMatch(){
+  document.getElementById('mgrid').innerHTML=CLUES.map((c,i)=>`
+    <div class="ccard" id="cc${i}">
+      <div class="cnum">CLUE ${String(i+1).padStart(2,'0')}</div>
+      <div class="ctxt">${c.clue}</div>
+      <select class="csel" id="cs${i}">
+        <option value="">— Select planet —</option>
+        ${POPTS.map(p=>`<option value="${p}">${p}</option>`).join('')}
+      </select>
+      <div class="cverd" id="cv${i}"></div>
+    </div>`).join('');
+}
+function chkR2(){
+  let all=true,ok=true;
+  CLUES.forEach((c,i)=>{
+    const v=document.getElementById(`cs${i}`).value,card=document.getElementById(`cc${i}`),vd=document.getElementById(`cv${i}`);
+    if(!v){all=false;return;}
+    card.classList.remove('correct','wrong');
+    if(v===c.ans){card.classList.add('correct');vd.textContent='✓ Correct!';}
+    else{card.classList.add('wrong');vd.textContent=`✗ Not ${v}`;ok=false;}
+  });
+  if(!all){showM('r2e','⚠ Select a planet for every clue first!');return;}
+  if(ok){document.getElementById('r2e').classList.remove('show');document.getElementById('r2ok').classList.add('show');setTimeout(()=>show('r3'),2200);}
+  else showM('r2e','⚠ Some matches are incorrect. Re-read each clue and think about each planet\'s special feature!');
+}
+function rstR2(){
+  CLUES.forEach((_,i)=>{document.getElementById(`cs${i}`).value='';const c=document.getElementById(`cc${i}`);c.classList.remove('correct','wrong');document.getElementById(`cv${i}`).textContent='';});
+  document.getElementById('r2e').classList.remove('show');document.getElementById('r2ok').classList.remove('show');
+}
+
+// ─────────────────────────────────────────────
+// ROOM 3 — BINARY DECODER
+// Answer: SATELLITE (from curriculum: "Satellites are objects in space that orbit around another larger object")
+// ─────────────────────────────────────────────
+const BANS='SATELLITE';
+const BMAP={A:'01000001',B:'01000010',C:'01000011',D:'01000100',E:'01000101',F:'01000110',G:'01000111',
+  H:'01001000',I:'01001001',J:'01001010',K:'01001011',L:'01001100',M:'01001101',N:'01001110',O:'01001111',
+  P:'01010000',Q:'01010001',R:'01010010',S:'01010011',T:'01010100',U:'01010101',V:'01010110',
+  W:'01010111',X:'01011000',Y:'01011001',Z:'01011010'};
+function buildBin(){
+  document.getElementById('bchunks').innerHTML=[...BANS].map((ch,i)=>`
+    <div class="bchunk">
+      <div class="bcode">${BMAP[ch]}</div>
+      <div class="bblank" id="bb${i}">_</div>
+    </div>`).join('');
+}
+function buildRef(){
+  document.getElementById('reftbl').innerHTML=Object.entries(BMAP).map(([l,b])=>`
+    <div class="refrow" onclick="addL('${l}')">
+      <span class="rl">${l}</span><span class="rb">${b}</span>
+    </div>`).join('');
+}
+function buildLiv(){
+  document.getElementById('livdec').innerHTML=[...BANS].map((_,i)=>`<div class="dch" id="dc${i}">_</div>`).join('');
+}
+function addL(l){const inp=document.getElementById('bans');if(inp.value.length<BANS.length)inp.value+=l;livChk();}
+function togRef(){const p=document.getElementById('refpanel'),a=document.getElementById('rarr');p.classList.toggle('show');a.textContent=p.classList.contains('show')?'▲':'▼';}
+function livChk(){
+  const val=document.getElementById('bans').value.toUpperCase();
+  [...BANS].forEach((ch,i)=>{
+    const dc=document.getElementById(`dc${i}`);
+    if(i<val.length){dc.textContent=val[i];dc.className='dch '+(val[i]===ch?'found':'match');}
+    else{dc.textContent='_';dc.className='dch';}
+  });
+}
+function chkR3(){
+  const val=document.getElementById('bans').value.toUpperCase().trim();
+  if(val===BANS){
+    document.getElementById('r3e').classList.remove('show');
+    document.getElementById('r3ok').classList.add('show');
+    for(let i=0;i<BANS.length;i++){const el=document.getElementById(`bb${i}`);if(el){el.textContent=BANS[i];el.classList.add('filled');}}
+    setTimeout(()=>{show('r4');initMoon();},2200);
+  } else {
+    const hint=val.length!==BANS.length?` (${val.length} letters entered — answer has ${BANS.length})`:'';
+    showM('r3e',`⚠ "${val}" is incorrect${hint}. Use the reference table to decode each 8-bit group one at a time.`);
+  }
+}
+
+// ─────────────────────────────────────────────
+// ROOM 4 — MOON PHASES (mix of phase + curriculum)
+// ─────────────────────────────────────────────
+let moonI=0,moonSc=0;
+const MOONQS=[
+  {type:'emoji',q:"Which moon phase shows NO lit portion visible from Earth?",ans:"🌑",
+    opts:[{e:"🌑",n:"New Moon"},{e:"🌓",n:"First Quarter"},{e:"🌕",n:"Full Moon"},{e:"🌗",n:"Third Quarter"}]},
+  {type:'emoji',q:"Which phase shows the COMPLETE lit face of the Moon facing Earth?",ans:"🌕",
+    opts:[{e:"🌒",n:"Waxing Crescent"},{e:"🌔",n:"Waxing Gibbous"},{e:"🌕",n:"Full Moon"},{e:"🌘",n:"Waning Crescent"}]},
+  {type:'emoji',q:"The Moon appears to grow brighter over several nights. This is a _____ phase.",ans:"🌒",
+    opts:[{e:"🌘",n:"Waning Crescent"},{e:"🌒",n:"Waxing Crescent"},{e:"🌖",n:"Waning Gibbous"},{e:"🌑",n:"New Moon"}]},
+  {type:'emoji',q:"Exactly half the Moon is lit and it's getting SMALLER each night. Which phase?",ans:"🌗",
+    opts:[{e:"🌓",n:"First Quarter"},{e:"🌗",n:"Third Quarter"},{e:"🌕",n:"Full Moon"},{e:"🌑",n:"New Moon"}]},
+  {type:'text',q:"Moon phases are an example of a natural phenomenon that can be described by a scientific explanation. What does it mean for a scientific explanation to be 'testable'?",ans:1,
+    opts:["It must be believed by all scientists","An investigation can either support or contradict it","It must never change once written down","It must use a telescope to prove it"]},
+];
+function initMoon(){moonI=0;moonSc=0;['r4ok','r4e'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('mnxt').style.display='none';document.getElementById('mfin').style.display='none';rndrM();}
+function rndrM(){
+  const q=MOONQS[moonI];
+  let optsHTML='';
+  if(q.type==='emoji'){
+    optsHTML=`<div class="mopts">${q.opts.map(o=>`<div class="mopt" onclick="pickM(this,'${o.e}')"><span class="mi">${o.e}</span><span class="mn">${o.n}</span></div>`).join('')}</div>`;
+  } else {
+    optsHTML=`<div style="display:flex;flex-direction:column;gap:8px">${q.opts.map((o,i)=>`<div class="mopt-txt" onclick="pickMT(this,${i})"><strong style="color:var(--cyan)">${String.fromCharCode(65+i)}.</strong> ${o}</div>`).join('')}</div>`;
+  }
+  document.getElementById('mcon').innerHTML=`
+    <div class="mprog">Question ${moonI+1} / ${MOONQS.length}</div>
+    <div class="mscr">Correct: ${moonSc} / ${MOONQS.length}</div>
+    <div class="mq">${q.q}</div>
+    ${optsHTML}`;
+}
+function pickM(el,chosen){
+  const q=MOONQS[moonI];
+  document.querySelectorAll('.mopt').forEach(o=>o.classList.add('locked'));
+  if(chosen===q.ans){el.classList.add('correct');moonSc++;}
+  else{el.classList.add('wrong');document.querySelectorAll('.mopt').forEach(o=>{if(o.querySelector('.mi').textContent===q.ans)o.classList.add('reveal');});}
+  afterMoon();
+}
+function pickMT(el,idx){
+  const q=MOONQS[moonI];
+  document.querySelectorAll('.mopt-txt').forEach(o=>o.classList.add('locked'));
+  if(idx===q.ans){el.classList.add('correct');moonSc++;}
+  else{el.classList.add('wrong');document.querySelectorAll('.mopt-txt')[q.ans].classList.add('reveal');}
+  afterMoon();
+}
+function afterMoon(){
+  if(moonI<MOONQS.length-1)document.getElementById('mnxt').style.display='inline-block';
+  else document.getElementById('mfin').style.display='inline-block';
+}
+function nxtM(){moonI++;document.getElementById('mnxt').style.display='none';rndrM();}
+function finM(){
+  if(moonSc>=4){document.getElementById('mfin').style.display='none';document.getElementById('r4ok').classList.add('show');setTimeout(()=>{show('r5');initQuiz();},2200);}
+  else{showM('r4e',`⚠ You scored ${moonSc}/5 — need at least 4 to proceed. Try again!`);setTimeout(initMoon,2600);}
+}
+
+// ─────────────────────────────────────────────
+// ROOM 5 — FINAL QUIZ (directly from uploaded Alberta curriculum notes)
+// ─────────────────────────────────────────────
+let qI=0,qSc=0;
+const QUIZ=[
+  {q:"What is a satellite?",
+    opts:["A type of star that orbits a black hole","An object in space that orbits around another larger object","A spacecraft that travels between galaxies","A comet that passes near the Sun"],ans:1},
+  {q:"Alberta's first satellite, Ex-Alta 1, was designed by University of Alberta students and launched from where?",
+    opts:["Cape Canaveral, USA","The Baikonur Cosmodrome, Russia","The International Space Station","A research base in northern Canada"],ans:2},
+  {q:"Which of the following is a natural satellite?",
+    opts:["The Hubble Space Telescope","Ex-Alta 1","The International Space Station","The Moon"],ans:3},
+  {q:"Which characteristic do scientists consider necessary for life to exist on another planet?",
+    opts:["Rings made of ice","Liquid water on the surface","Being close to a blue star","Having more than 10 moons"],ans:1},
+  {q:"Why was Pluto reclassified as a dwarf planet instead of a full planet?",
+    opts:["It was found to be made entirely of ice","New evidence showed it had not cleared the neighbourhood of its orbit","Scientists discovered it orbits two suns","It moved too far from the Sun to be measured"],ans:1},
+  {q:"Which technologies are used to explore the solar system?",
+    opts:["Submarines and deep-sea probes","Telescopes, satellites, probes, rovers, and space stations","Infrared cameras launched from Earth only","Weather balloons and radar"],ans:1},
+  {q:"A scientific explanation must be testable (falsifiable). What does this mean?",
+    opts:["It must be believed by every scientist on Earth","It must be written in a peer-reviewed journal","An investigation can either support or contradict the explanation","The explanation must never be changed"],ans:2},
+  {q:"The solar system is a complex group of celestial bodies. Which list BEST describes what the solar system includes?",
+    opts:["Only the eight planets orbiting the Sun","The Sun, planets, moons, dwarf planets, asteroids, comets, and meteoroids","The Sun and the Milky Way galaxy","Only objects that emit their own light"],ans:1},
+];
+function initQuiz(){qI=0;qSc=0;['r5ok','r5e'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('pcpanel').style.display='none';document.getElementById('pdig5').textContent='_';document.getElementById('lbtn').disabled=true;rndrQ();}
+function rndrQ(){
+  if(qI>=QUIZ.length)return;
+  const q=QUIZ[qI];
+  document.getElementById('qprog').textContent=`Question ${qI+1} / ${QUIZ.length}`;
+  document.getElementById('qscr').textContent=`Score: ${qSc} / ${QUIZ.length}`;
+  document.getElementById('qqt').textContent=q.q;
+  document.getElementById('qopts').innerHTML=q.opts.map((o,i)=>`<div class="qopt" onclick="pickQ(this,${i})">${o}</div>`).join('');
+}
+function pickQ(el,idx){
+  const q=QUIZ[qI];
+  document.querySelectorAll('.qopt').forEach(o=>o.classList.add('locked'));
+  if(idx===q.ans){el.classList.add('correct');qSc++;}
+  else{el.classList.add('wrong');document.querySelectorAll('.qopt')[q.ans].classList.add('reveal');}
+  qI++;document.getElementById('qscr').textContent=`Score: ${qSc} / ${QUIZ.length}`;
+  if(qI<QUIZ.length)setTimeout(rndrQ,1450);else setTimeout(finQ,1450);
+}
+function finQ(){
+  if(qSc>=6){
+    document.getElementById('qprog').textContent=`Complete! ${qSc}/8 — PASSED 🎉`;
+    document.getElementById('qopts').innerHTML='';document.getElementById('qqt').textContent='';
+    document.getElementById('r5ok').classList.add('show');
+    document.getElementById('pdig5').textContent='4';
+    document.getElementById('pcpanel').style.display='block';
+    document.getElementById('lbtn').disabled=false;
+  } else {
+    showM('r5e',`⚠ You scored ${qSc}/8 — need at least 6. Retrying in 3 seconds…`);
+    setTimeout(initQuiz,3000);
+  }
+}
+
+// ─────────────────────────────────────────────
+// LAUNCH & WIN
+// ─────────────────────────────────────────────
+function doLaunch(){stopTimer();document.getElementById('wt').textContent=fmt(sLeft);show('win');spawnConfetti();}
+
+// ─────────────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────────────
+function spawnConfetti(){
+  const canvas=document.getElementById('cv'),ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const cols=['#00e5ff','#ffd600','#00ff88','#ff6030','#ff3a9e','#ffffff'];
+  const bits=Array.from({length:160},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*-canvas.height*.5,
+    r:Math.random()*6+3,vx:Math.random()*4-2,vy:Math.random()*3+2,
+    col:cols[Math.floor(Math.random()*cols.length)],
+    tilt:Math.random()*10-10,tiltS:Math.random()*.1+.04,tiltA:0,life:280+Math.floor(Math.random()*120)
+  }));
+  let frame=0;
+  const loop=()=>{
+    if(frame++>400)return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    bits.forEach(b=>{
+      if(frame>b.life)return;
+      b.tiltA+=b.tiltS;b.y+=b.vy;b.x+=b.vx+Math.sin(b.tiltA)*.5;b.tilt=Math.sin(b.tiltA)*12;
+      ctx.beginPath();ctx.lineWidth=b.r;ctx.strokeStyle=b.col;
+      ctx.moveTo(b.x+b.tilt+b.r/4,b.y);ctx.lineTo(b.x+b.tilt,b.y+b.tilt+b.r*1.2);ctx.stroke();
+    });
+    requestAnimationFrame(loop);
+  };loop();
+}
+
+// ─────────────────────────────────────────────
+// LOGIN SYSTEM
+// ─────────────────────────────────────────────
+const VALID_USER = 'Student';
+const VALID_PASS = 'Aurora2026';
+
+function doLogin() {
+  const u = document.getElementById('li-user').value.trim();
+  const p = document.getElementById('li-pass').value.trim();
+  const errEl = document.getElementById('login-err');
+  if (u.toLowerCase() === VALID_USER.toLowerCase() && p === VALID_PASS) {
+    errEl.classList.remove('show');
+    const box = document.getElementById('login');
+    box.style.transition = 'opacity .6s ease, transform .6s ease';
+    box.style.opacity = '0';
+    box.style.transform = 'scale(1.04)';
+    setTimeout(() => {
+      box.style.display = 'none';
+      document.getElementById('intro').classList.add('active');
+    }, 600);
+  } else {
+    errEl.classList.remove('show');
+    void errEl.offsetWidth;
+    errEl.classList.add('show');
+    document.getElementById('li-pass').value = '';
+    document.getElementById('li-pass').focus();
+  }
+}
+
+function togglePw() {
+  const inp = document.getElementById('li-pass');
+  const btn = document.getElementById('pw-eye-btn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+buildMatch();buildBin();buildRef();buildLiv();initMoon();initQuiz();
+</script>
+</body>
+</html>
