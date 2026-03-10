@@ -321,7 +321,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
     <span class="rocket">🚀</span>
     <div class="ititle">MISSION:<br>COSMOS RESCUE</div>
     <p class="itext">Commander! Deep Space Station <strong style="color:var(--cyan)">AURORA</strong> is in emergency lockdown. A solar storm has scrambled all five security systems.</p>
-    <p class="itext">Use your Grade 6 Space Science knowledge to crack each puzzle, collect the codes, and launch the rescue rocket — <strong style="color:var(--gold)">before 30 minutes run out!</strong></p>
+    <p class="itext">Use your Grade 6 Space Science knowledge to crack each puzzle, collect the codes, and launch the rescue rocket — <strong style="color:var(--gold)">before 20 minutes run out!</strong></p>
     <div class="chips">
       <div class="chip"><em>🪐</em>Room 1: Planet Order</div>
       <div class="chip"><em>🔭</em>Room 2: Planet Match</div>
@@ -337,7 +337,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 <div class="screen" id="r1">
   <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
   <div class="hud">
-    <div class="tbadge" id="tm1">⏱ 30:00</div>
+    <div class="tbadge" id="tm1">⏱ 20:00</div>
     <div class="hbar"><div class="htrack"><div class="hfill" style="width:0%"></div></div></div>
     <div class="hdots"><div class="hd now"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div></div>
   </div>
@@ -346,7 +346,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
     <div class="ptitle">🪐 Planetary Sequence</div>
     <div class="lore">The navigation computer needs the planets in order from the Sun. <strong>Drag each planet</strong> from the bank into the numbered slots. Slot 1 = closest to the Sun, Slot 8 = farthest.</div>
     <div class="olbl">PLANET BANK</div>
-    <div class="pbank" id="r1bank">
+    <div class="pbank" id="r1bank" ondragover="pov(event)" ondrop="pdrBank(event)">
       <div class="ppill pp-jupiter" draggable="true" id="pp-jupiter" ondragstart="pd(event)" ondragend="pe(event)">☁️ Jupiter</div>
       <div class="ppill pp-earth"   draggable="true" id="pp-earth"   ondragstart="pd(event)" ondragend="pe(event)">🌍 Earth</div>
       <div class="ppill pp-neptune" draggable="true" id="pp-neptune" ondragstart="pd(event)" ondragend="pe(event)">💙 Neptune</div>
@@ -370,6 +370,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
     <div class="brow">
       <button class="btn btn-c" onclick="chkR1()">🔓 CHECK SEQUENCE</button>
       <button class="btn btn-gh" onclick="th('h1')">💡 HINT</button>
+      <button class="btn btn-gh" onclick="undoR1()">↩ UNDO</button>
       <button class="btn btn-gh" onclick="rstR1()">↺ RESET</button>
     </div>
     <div class="hint-b" id="h1">💡 <strong>Mnemonic:</strong> <em>My Very Educated Mother Just Served Us Nachos</em> → Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune</div>
@@ -382,7 +383,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 <div class="screen" id="r2">
   <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
   <div class="hud">
-    <div class="tbadge" id="tm2">⏱ 30:00</div>
+    <div class="tbadge" id="tm2">⏱ 20:00</div>
     <div class="hbar"><div class="htrack"><div class="hfill" style="width:20%"></div></div></div>
     <div class="hdots"><div class="hd done"></div><div class="hd now"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div></div>
   </div>
@@ -406,7 +407,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 <div class="screen" id="r3">
   <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
   <div class="hud">
-    <div class="tbadge" id="tm3">⏱ 30:00</div>
+    <div class="tbadge" id="tm3">⏱ 20:00</div>
     <div class="hbar"><div class="htrack"><div class="hfill" style="width:40%"></div></div></div>
     <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div><div class="hd"></div><div class="hd"></div></div>
   </div>
@@ -433,6 +434,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
     </div>
     <div class="brow" style="margin-top:6px">
       <button class="btn btn-gh" onclick="th('h3')">💡 HINT</button>
+      <button class="btn btn-gh" onclick="undoR3()">↩ UNDO</button>
       <button class="btn btn-gh" onclick="document.getElementById('bans').value='';livChk()">✕ CLEAR</button>
     </div>
     <div class="hint-b" id="h3">💡 Count the binary groups — that's how many letters. Match each 8-digit group in the table to get its letter. The word is something that orbits a larger object in space (it's in your notes!).</div>
@@ -445,7 +447,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 <div class="screen" id="r4">
   <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
   <div class="hud">
-    <div class="tbadge" id="tm4">⏱ 30:00</div>
+    <div class="tbadge" id="tm4">⏱ 20:00</div>
     <div class="hbar"><div class="htrack"><div class="hfill" style="width:60%"></div></div></div>
     <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div><div class="hd"></div></div>
   </div>
@@ -467,7 +469,7 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 <div class="screen" id="r5">
   <div class="masthead"><h1>MISSION: COSMOS RESCUE</h1><div class="sub">Deep Space Station Aurora · Emergency Protocol</div></div>
   <div class="hud">
-    <div class="tbadge" id="tm5">⏱ 30:00</div>
+    <div class="tbadge" id="tm5">⏱ 20:00</div>
     <div class="hbar"><div class="htrack"><div class="hfill" style="width:80%"></div></div></div>
     <div class="hdots"><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd done"></div><div class="hd now"></div></div>
   </div>
@@ -518,8 +520,8 @@ body{font-family:'Exo 2',sans-serif;background:var(--void);color:var(--text);min
 // ─────────────────────────────────────────────
 // TIMER
 // ─────────────────────────────────────────────
-let tInt=null,sLeft=1800;
-const TOTAL=1800;
+let tInt=null,sLeft=1200;
+const TOTAL=1200;
 function startTimer(){
   tInt=setInterval(()=>{
     sLeft--;
@@ -555,7 +557,7 @@ function showM(id,txt){const el=document.getElementById(id);if(el){el.innerHTML=
 // ROOM 1 — PLANET ORDER
 // ─────────────────────────────────────────────
 const PANS=['mercury','venus','earth','mars','jupiter','saturn','uranus','neptune'];
-let dragP=null;const smap={};
+let dragP=null;const smap={};let r1History=[];
 function pd(e){dragP=e.target;e.target.classList.add('dragging');e.dataTransfer.setData('text',e.target.id);}
 function pe(e){e.target.classList.remove('dragging');}
 function pov(e){e.preventDefault();e.currentTarget.classList.add('dov');}
@@ -563,17 +565,54 @@ document.addEventListener('dragleave',e=>{if(e.target.classList&&e.target.classL
 function pdr(e){
   e.preventDefault();const sl=e.currentTarget;sl.classList.remove('dov');
   const pid=e.dataTransfer.getData('text'),sn=sl.id.replace('sl','');
+  // save snapshot before change
+  const snap={smap:JSON.parse(JSON.stringify(smap)),slots:{}};
+  for(let i=1;i<=8;i++){const s=document.getElementById('sl'+i);snap.slots[i]=s.getAttribute('data-pid');}
+  r1History.push(snap);
   const prev=sl.getAttribute('data-pid');
   if(prev){rtb(prev);delete smap[sn];}
   for(const[k,v]of Object.entries(smap)){if(v===pid){clrSl(k);delete smap[k];break;}}
+  placePillInSlot(pid,sl,sn);
+}
+function pdrBank(e){
+  e.preventDefault();
+  const pid=e.dataTransfer.getData('text');
+  const pEl=document.getElementById(pid);
+  // only act if it came from a slot (i.e. it's hidden)
+  if(pEl.style.display==='none'){
+    const snap={smap:JSON.parse(JSON.stringify(smap)),slots:{}};
+    for(let i=1;i<=8;i++){const s=document.getElementById('sl'+i);snap.slots[i]=s.getAttribute('data-pid');}
+    r1History.push(snap);
+    // remove from whichever slot it was in
+    for(const[k,v]of Object.entries(smap)){if(v===pid){clrSl(k);delete smap[k];break;}}
+    rtb(pid);
+  }
+}
+function placePillInSlot(pid,sl,sn){
   const pEl=document.getElementById(pid);
   const cls=[...pEl.classList].find(c=>c.startsWith('pp-'));
-  sl.querySelector('.sf').innerHTML=`<div class="ppill ${cls}" style="font-size:.63rem;padding:4px 6px;cursor:default;pointer-events:none;">${pEl.textContent}</div>`;
+  sl.querySelector('.sf').innerHTML=`<div class="ppill ${cls}" draggable="true" style="font-size:.63rem;padding:4px 6px;" ondragstart="pdSlot(event,'${pid}')" ondragend="pe(event)">${pEl.textContent}</div>`;
   sl.setAttribute('data-pid',pid);smap[sn]=pid;pEl.style.display='none';
 }
+function pdSlot(e,pid){e.stopPropagation();e.dataTransfer.setData('text',pid);e.target.classList.add('dragging');}
 function clrSl(n){const s=document.getElementById('sl'+n);s.querySelector('.sf').innerHTML='';s.removeAttribute('data-pid');}
 function rtb(pid){const el=document.getElementById(pid);if(el){el.style.display='';document.getElementById('r1bank').appendChild(el);}}
-function rstR1(){for(let i=1;i<=8;i++)clrSl(i);Object.keys(smap).forEach(k=>delete smap[k]);document.querySelectorAll('.ppill').forEach(el=>{el.style.display='';document.getElementById('r1bank').appendChild(el);});}
+function rstR1(){r1History=[];for(let i=1;i<=8;i++)clrSl(i);Object.keys(smap).forEach(k=>delete smap[k]);document.querySelectorAll('.ppill').forEach(el=>{el.style.display='';document.getElementById('r1bank').appendChild(el);});}
+function undoR1(){
+  if(!r1History.length)return;
+  const prev=r1History.pop();
+  for(let i=1;i<=8;i++)clrSl(i);
+  Object.keys(smap).forEach(k=>delete smap[k]);
+  document.querySelectorAll('.ppill').forEach(el=>{el.style.display='';document.getElementById('r1bank').appendChild(el);});
+  Object.assign(smap,prev.smap);
+  for(let i=1;i<=8;i++){
+    const pid=prev.slots[i];
+    if(pid){
+      const sl=document.getElementById('sl'+i);
+      placePillInSlot(pid,sl,String(i));
+    }
+  }
+}
 function chkR1(){
   for(let i=1;i<=8;i++)if(!smap[i]){showM('r1e','⚠ Fill all 8 slots first!');return;}
   const ord=Object.keys(smap).sort((a,b)=>+a-+b).map(k=>smap[k].replace('pp-',''));
@@ -654,6 +693,7 @@ function buildLiv(){
   document.getElementById('livdec').innerHTML=[...BANS].map((_,i)=>`<div class="dch" id="dc${i}">_</div>`).join('');
 }
 function addL(l){const inp=document.getElementById('bans');if(inp.value.length<BANS.length)inp.value+=l;livChk();}
+function undoR3(){const inp=document.getElementById('bans');inp.value=inp.value.slice(0,-1);livChk();}
 function togRef(){const p=document.getElementById('refpanel'),a=document.getElementById('rarr');p.classList.toggle('show');a.textContent=p.classList.contains('show')?'▲':'▼';}
 function livChk(){
   const val=document.getElementById('bans').value.toUpperCase();
@@ -732,28 +772,88 @@ function finM(){
 }
 
 // ─────────────────────────────────────────────
-// ROOM 5 — FINAL QUIZ (directly from uploaded Alberta curriculum notes)
+// ROOM 5 — FINAL QUIZ (expanded question bank from Alberta curriculum notes)
 // ─────────────────────────────────────────────
-let qI=0,qSc=0;
-const QUIZ=[
+let qI=0,qSc=0,QUIZ=[];
+const QUESTION_BANK=[
+  // From uploaded curriculum images — celestial bodies & characteristics
+  {q:"What is a celestial body?",
+    opts:["Any object made by humans and sent to space","A natural body located beyond Earth's atmosphere","A type of cloud formation in the upper atmosphere","Any object larger than a planet"],ans:1},
+  {q:"Which of the following is NOT one of the ways celestial bodies are classified?",
+    opts:["Planets","Moons","Nebulae","Comets"],ans:2},
+  {q:"Which characteristic can vary between celestial bodies?",
+    opts:["Their distance from the Milky Way centre only","Surface conditions such as temperature, gravity, and atmosphere","Only their size and shape","Only their chemical composition"],ans:1},
+  {q:"Some celestial bodies emit light while others reflect light. Which of the following EMITS its own light?",
+    opts:["The Moon","Mars","Stars","Venus"],ans:2},
+  {q:"What is an asteroid belt?",
+    opts:["A ring of gas surrounding a gas giant","A collection of asteroids found within the solar system","A band of comets orbiting the Sun","A region of space with no gravity"],ans:1},
   {q:"What is a satellite?",
     opts:["A type of star that orbits a black hole","An object in space that orbits around another larger object","A spacecraft that travels between galaxies","A comet that passes near the Sun"],ans:1},
-  {q:"Alberta's first satellite, Ex-Alta 1, was designed by University of Alberta students and launched from where?",
+  {q:"What is an orbit?",
+    opts:["The speed at which a planet spins on its axis","The distance between two planets","The recurring path of an object around another object in space","The area of space between two stars"],ans:2},
+  {q:"Are natural satellites considered celestial bodies?",
+    opts:["No, only planets are celestial bodies","Yes, natural satellites are celestial bodies","Only if they are larger than Earth's Moon","No, only artificial satellites are"],ans:1},
+  // Solar system structure
+  {q:"The solar system is best described as:",
+    opts:["Only the eight planets orbiting the Sun","The Sun and the Milky Way galaxy","A complex group including the Sun, planets, moons, dwarf planets, asteroids, comets, and meteoroids","Only objects that emit their own light"],ans:2},
+  {q:"Why was Pluto reclassified as a dwarf planet instead of a full planet?",
+    opts:["It was found to be made entirely of ice","New evidence showed it had not cleared the neighbourhood of its orbit","Scientists discovered it orbits two suns","It moved too far from the Sun to be measured"],ans:1},
+  {q:"What can the solar system be modeled to show?",
+    opts:["Only the colours of the planets","The size of the Sun and planets and the distance between them","The chemical makeup of each planet","Only the moons of each planet"],ans:1},
+  {q:"Alberta's first satellite, Ex-Alta 1, was launched from where?",
     opts:["Cape Canaveral, USA","The Baikonur Cosmodrome, Russia","The International Space Station","A research base in northern Canada"],ans:2},
   {q:"Which of the following is a natural satellite?",
     opts:["The Hubble Space Telescope","Ex-Alta 1","The International Space Station","The Moon"],ans:3},
-  {q:"Which characteristic do scientists consider necessary for life to exist on another planet?",
-    opts:["Rings made of ice","Liquid water on the surface","Being close to a blue star","Having more than 10 moons"],ans:1},
-  {q:"Why was Pluto reclassified as a dwarf planet instead of a full planet?",
-    opts:["It was found to be made entirely of ice","New evidence showed it had not cleared the neighbourhood of its orbit","Scientists discovered it orbits two suns","It moved too far from the Sun to be measured"],ans:1},
+  {q:"What makes artificial satellites different from natural satellites?",
+    opts:["Artificial satellites are larger than natural ones","Artificial satellites are constructed and put into orbit by humans","Artificial satellites only orbit the Sun","Artificial satellites cannot reflect light"],ans:1},
   {q:"Which technologies are used to explore the solar system?",
     opts:["Submarines and deep-sea probes","Telescopes, satellites, probes, rovers, and space stations","Infrared cameras launched from Earth only","Weather balloons and radar"],ans:1},
+  {q:"What is the International Space Station?",
+    opts:["A space telescope that observes distant galaxies","A research facility that orbits Earth","A spacecraft travelling to Mars","A satellite that monitors weather"],ans:1},
+  // Scientific explanation & evidence
   {q:"A scientific explanation must be testable (falsifiable). What does this mean?",
     opts:["It must be believed by every scientist on Earth","It must be written in a peer-reviewed journal","An investigation can either support or contradict the explanation","The explanation must never be changed"],ans:2},
-  {q:"The solar system is a complex group of celestial bodies. Which list BEST describes what the solar system includes?",
-    opts:["Only the eight planets orbiting the Sun","The Sun, planets, moons, dwarf planets, asteroids, comets, and meteoroids","The Sun and the Milky Way galaxy","Only objects that emit their own light"],ans:1},
+  {q:"What is evidence used for in science?",
+    opts:["To make experiments look more official","To support or contradict a hypothesis","To replace observations and measurements","To communicate only to experts"],ans:1},
+  {q:"Scientific explanations can be communicated in many forms. Which list includes valid forms?",
+    opts:["Only spoken presentations and verbal discussions","Graphs, tables, flow charts, diagrams, models, written texts, and verbal presentations","Only written research papers","Only digital models and computer simulations"],ans:1},
+  {q:"Which statement best describes how audience needs affect scientific communication?",
+    opts:["The audience has no effect on how science is communicated","The needs of the audience influence vocabulary, level of detail, and method of communication","Scientists always use the same vocabulary regardless of audience","Only vocabulary changes depending on the audience"],ans:1},
+  {q:"What can further investigation in science involve?",
+    opts:["Only a single experiment repeated once","Continual collection of evidence, community debate, multiple investigations, and new technologies","Only experiments done in laboratories","Replacing all previous scientific conclusions"],ans:1},
+  {q:"Which statement about scientific explanations and new evidence is most accurate?",
+    opts:["One conflicting study is enough to cause a scientific explanation to be refined","New evidence has never changed a scientific explanation","New evidence has refined inaccurate scientific explanations, such as the idea that the Sun revolves around the Earth","Scientific explanations are always final and never change"],ans:2},
+  {q:"Why is scientific exploration of space important for understanding Earth?",
+    opts:["It helps Earth avoid meteor impacts only","Scientific exploration has revealed that Earth is an interconnected part of a group of planets orbiting the Sun","It allows scientists to mine other planets for resources","It has no relevance to understanding Earth"],ans:1},
+  {q:"Which characteristic do scientists consider necessary for life to exist on another planet?",
+    opts:["Rings made of ice","Liquid water on the surface","Being close to a blue star","Having more than 10 moons"],ans:1},
+  // Multiple choice from the uploaded unit test
+  {q:"Which planets are on either side of Earth?",
+    opts:["Mars and Jupiter","Mercury and Mars","Venus and Mars","Jupiter and Venus"],ans:2},
+  {q:"Which is the largest structure in the universe?",
+    opts:["The Earth","The Milky Way Galaxy","Our Solar System","The Universe"],ans:3},
+  {q:"Which planet is NOT a terrestrial (rocky) planet?",
+    opts:["Jupiter","Mercury","Earth","Mars"],ans:0},
+  {q:"Which planet is NOT a gas planet?",
+    opts:["Neptune","Jupiter","Saturn","Mercury"],ans:3},
+  {q:"What is a piece of rock from space that makes it all the way to Earth's surface called?",
+    opts:["Asteroid","Meteor","Meteorite","Comet"],ans:2},
+  {q:"'Halley' was the name of which type of space object?",
+    opts:["Asteroid","Meteor","Meteorite","Comet"],ans:3},
+  {q:"Which planet is closest to the Sun?",
+    opts:["Venus","Earth","Mars","Mercury"],ans:3},
+  {q:"In which year did Pluto officially become classified as a dwarf planet?",
+    opts:["1930","1996","2006","2022"],ans:2},
+  {q:"On which planet would you weigh the most?",
+    opts:["Jupiter","Earth","Mars","Neptune"],ans:0},
+  {q:"Knowledge of the solar system continues to develop. What drives this continued development?",
+    opts:["Astronomers repeating the same experiments","Further space exploration, discovery, and use of new technologies","Only ground-based telescope observations","Scientists memorising older textbooks"],ans:1},
 ];
-function initQuiz(){qI=0;qSc=0;['r5ok','r5e'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('pcpanel').style.display='none';document.getElementById('pdig5').textContent='_';document.getElementById('lbtn').disabled=true;rndrQ();}
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function pickQuiz(){QUIZ=shuffle([...QUESTION_BANK]).slice(0,8);}
+
+function initQuiz(){qI=0;qSc=0;pickQuiz();['r5ok','r5e'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('pcpanel').style.display='none';document.getElementById('pdig5').textContent='_';document.getElementById('lbtn').disabled=true;rndrQ();}
 function rndrQ(){
   if(qI>=QUIZ.length)return;
   const q=QUIZ[qI];
